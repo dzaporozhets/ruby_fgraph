@@ -10,3 +10,4 @@ module FGraph
 end
 
 require "#{FGraph.root}/fgraph/oauth"
+require "#{FGraph.root}/fgraph/query"
