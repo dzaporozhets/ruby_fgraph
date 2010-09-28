@@ -1,0 +1,62 @@
+= ruby_fgraph
+
+FGraph lite library based on oauth2 gem for authorization and api calls
+
+== Installation
+
+    gem install ruby_fgraph
+    
+== Example
+
+    Examaple using rails 3 on http://github.com/randx/Facebook-Graph-Gem-Example
+
+== Rails 3 Example 
+
+    class FacebookAccountController < ApplicationController
+      # requrie ruby_graph
+      require 'ruby_fgraph'
+      before_filter :init_fb
+
+      # create connection object
+      def init_fb
+        # register facebook app and set params here
+        params = {
+          :app_id => '149291415089452',
+          :app_secret => '4e13073ded8bfb0cc3279e86811121b0',
+          :callback_url => "http://127.0.0.1:3000/facebook_account/token/",
+        }
+        # create fgraph connection
+        @f_connection = FGraph::Connection.new params
+      end
+
+      # redirect to auth page
+      # to get access for api calls
+      def index
+        redirect_to @f_connection.rails_authorize_redirect
+      end
+
+      # redirected here after auth
+      # get authorization token using recieved code
+      def token
+        # get token by code
+        @f_connection.accept_token params[:code]
+        # save token to session
+        session[:f_token] = @f_connection.get_access_token
+        # now we are ready to test
+        render :text => "Ok. now try /facebook_account/query_test"
+      end
+
+      # test query after token saved
+      def query_test  
+        # set token for auth calls
+        @f_connection.token = session[:f_token]
+        # check if token valid 
+        return redirect_to :action => "not_auth" unless @f_connection.is_authorized?
+        # now its your connection. lets get info
+        render :text => @f_connection.query('/me').to_yaml
+      end
+
+      def not_auth
+        render :text => "not authorized"
+      end
+    end
