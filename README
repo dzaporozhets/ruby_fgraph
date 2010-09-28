@@ -1,3 +1,8 @@
-== FGraph
+Examaple using rails 3 on http://github.com/randx/Facebook-Graph-Gem-Example
 
-You should document your project here.
+Installing as gem
+ - sudo gem install ruby_fgraph
+
+Example of usage
+  @f_connection = FGraph::Connection.new params
+  @f_connection.query('/me').to_yaml
